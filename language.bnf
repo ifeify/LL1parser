@@ -1,0 +1,12 @@
+<S> ::= <A><$>
+<A> ::= <B><Aprime>
+<Aprime> ::= |<B><Aprime>
+<Aprime> ::= #
+<B> ::= <C><Bprime>
+<Bprime> ::= ^<C><Bprime>
+<Bprime> ::= #
+<C> ::= ~<D>
+<C> ::= <D>
+<D> ::= (<A>)
+<D> ::= 0
+<D> ::= 1
