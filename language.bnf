@@ -1,4 +1,4 @@
-<S> ::= <A>'$'
+<S> ::= <A>
 <A> ::= <B><Aprime>
 <Aprime> ::= '|'<B><Aprime>
 <Aprime> ::= ''
