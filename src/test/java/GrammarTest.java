@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class GrammarTest {
@@ -87,5 +88,16 @@ public class GrammarTest {
 
         assertEquals(firstOfB, followsOfB);
 
+    }
+
+    @Test(expected = BNFGrammarException.class)
+    public void throwsExceptionWhenNonTerminalIsMissingAClosingBracket() throws BNFGrammarException {
+        Grammar.nonTerminalsInBNF("'+'<A><B><C");
+    }
+
+    @Test
+    public void correctlyReturnsNonterminalsFromBNFString() throws BNFGrammarException {
+        List<String> nonterminals = Grammar.nonTerminalsInBNF("'+'<B><C>");
+        assertThat(nonterminals, hasItems("B", "C"));
     }
 }

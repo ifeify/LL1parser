@@ -1,4 +1,4 @@
-public class BNFGrammarException extends Throwable {
+public class BNFGrammarException extends SyntaxException {
     public BNFGrammarException(String errorMessage) {
         super(errorMessage);
     }

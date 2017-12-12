@@ -14,11 +14,6 @@ public class Grammar {
     public static final String EOF = "$";
     public static final String EPSILON = "@#&";
 
-    // terminals are enclosed in ''
-    private Pattern terminalPattern = Pattern.compile("'.'");
-    // non terminals are enclosed in <>
-    private Pattern nonterminalPattern = Pattern.compile("<\\w+>"); // non terminal regex
-
     private String startSymbol; // always a non terminal
     private Set<String> terminals = new HashSet<>();
     private Multimap<String, String> rules = ArrayListMultimap.create();
@@ -99,7 +94,7 @@ public class Grammar {
         return firstSets;
     }
 
-    public Set<String> firstOf(String nonTerminal, String productionBody) throws BNFGrammarException {
+    public Set<String> firstOf(final String nonTerminal, final String productionBody) throws BNFGrammarException {
         if(!rules.containsKey(nonTerminal)) {
             throw new BNFGrammarException("Non-terminal symbol, " + nonTerminal
                     + ", is not in the grammar");
@@ -145,8 +140,6 @@ public class Grammar {
             String body = production.getValue();
 
             // for rules S -> A where S is the start symbol
-            System.out.println(body);
-
             String bnfFormat = "<" + nonTerminal + ">";
             if(body.matches("^.*" + bnfFormat + "$") && isStartSymbol(head)) {
                 follows.add(EOF);
@@ -159,7 +152,7 @@ public class Grammar {
                 // for recursive rules A -> BA'
                 followOf(head, follows);
             } else {
-                System.out.println("Ignoring this rule...");
+                System.out.println("Ignoring this rule... " + body);
             }
         }
     }
@@ -217,6 +210,10 @@ public class Grammar {
         return startSymbol.equals(nonTerminal);
     }
 
+    public boolean isEpsilonProduction(String ruleBody) {
+        return ruleBody.isEmpty();
+    }
+
     public int numberOfProductions() {
         return rules.size();
     }
@@ -224,5 +221,30 @@ public class Grammar {
 
     public Multimap<String, String> getRules() {
         return rules;
+    }
+
+    public static List<String> nonTerminalsInBNF(String rule) throws BNFGrammarException {
+        List<String> nonterminals = new ArrayList<>();
+        for(int i = 0; i < rule.length(); i++) {
+            if(rule.charAt(i) == '<') {
+                // find closing brackets
+                boolean found = false;
+                int j = i + 1;
+                while(j < rule.length()) {
+                    if(rule.charAt(j) == '>') {
+                        found = true;
+                        break;
+                    }
+                    ++j;
+                }
+                if(!found) {
+                    throw new BNFGrammarException("Missing closing brackets > in rule " + rule);
+                }
+                String nonterminal = rule.substring(i+1, j);
+                nonterminals.add(nonterminal);
+                i = j;
+            }
+        }
+        return nonterminals;
     }
 }
