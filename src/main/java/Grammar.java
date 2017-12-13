@@ -141,7 +141,7 @@ public class Grammar {
 
             // for rules S -> A where S is the start symbol
             String bnfFormat = "<" + nonTerminal + ">";
-            System.out.println("BNF: " + bnfFormat);
+//            System.out.println("BNF: " + bnfFormat);
 
             if(body.matches("^.*" + bnfFormat + "$") && isStartSymbol(head)) {
                 follows.add(EOF);
@@ -173,7 +173,7 @@ public class Grammar {
                     followOf(head, follows);
                 }
             } else {
-                System.out.println("Ignoring this rule... " + body);
+//                System.out.println("Ignoring this rule... " + body);
             }
         }
     }

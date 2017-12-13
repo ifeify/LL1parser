@@ -22,9 +22,9 @@ public class TableDrivenParser implements Parser {
 
         String topOfStack = stack.peek();
         while(true) {
-            System.out.println("Stack contents");
-            stack.forEach(System.out::print);
-            System.out.println();
+//            System.out.println("Stack contents");
+//            stack.forEach(System.out::print);
+//            System.out.println();
 
             if(topOfStack.equals(Grammar.EOF) &&
                                 Grammar.EOF.equals(""+input.charAt(index))) {

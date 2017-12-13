@@ -13,19 +13,19 @@ public class ParseTable {
     }
 
     public void generate() throws BNFGrammarException {
-        System.out.println("------ PARSE TABLE -------");
+//        System.out.println("------ PARSE TABLE -------");
         for(Map.Entry<String, String> rule : grammar.getRules().entries()) {
             String productionHead = rule.getKey();
             String productionBody = rule.getValue();
 
-            System.out.println("Production Head: " + productionHead);
-            System.out.println("Production Body: " + productionBody);
+//            System.out.println("Production Head: " + productionHead);
+//            System.out.println("Production Body: " + productionBody);
 
             Set<String> firstSets = grammar.firstOf(productionHead, productionBody);
-            System.out.println("First sets are: ");
-            firstSets.forEach(System.out::print);
+//            System.out.println("First sets are: ");
+//            firstSets.forEach(System.out::print);
 
-            System.out.println();
+//            System.out.println();
             for(String terminal : firstSets) {
                 System.out.println(MessageFormat.format("T[{0}, {1}] = {2}",
                                                             productionHead,
@@ -36,7 +36,7 @@ public class ParseTable {
     }
 
     public Optional<String> ruleToApply(String nonTerminal, String terminal) {
-        System.out.println(MessageFormat.format("Searching for T[{0}, {1}]", nonTerminal, terminal));
+//        System.out.println(MessageFormat.format("Searching for T[{0}, {1}]", nonTerminal, terminal));
         if(table.contains(nonTerminal, terminal)) {
             return Optional.of(table.get(nonTerminal, terminal));
         }
