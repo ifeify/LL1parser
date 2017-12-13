@@ -141,16 +141,37 @@ public class Grammar {
 
             // for rules S -> A where S is the start symbol
             String bnfFormat = "<" + nonTerminal + ">";
+            System.out.println("BNF: " + bnfFormat);
+
             if(body.matches("^.*" + bnfFormat + "$") && isStartSymbol(head)) {
                 follows.add(EOF);
-            } else if(body.matches("^.*" + bnfFormat + "'.'.*$")) {
-                // for rules A -> B+
-                int stringEndIndex = body.lastIndexOf("<" + nonTerminal + ">");
-                follows.add(body.substring(stringEndIndex + bnfFormat.length() + 1, stringEndIndex + bnfFormat.length() + 2));
-            } else if(body.matches("^<.*>" + bnfFormat + ".*$") ||
-                                    body.matches("^'.'" + bnfFormat + ".*$")) {
-                // for recursive rules A -> BA'
-                followOf(head, follows);
+            }
+//            } else if(body.matches("^.*" + bnfFormat + "'.'.*$")) {
+                // for rules such as A -> <B>'+' where there a terminal immediately after the nonterminal
+//                int stringEndIndex = body.lastIndexOf(bnfFormat);
+//                follows.add(body.substring(stringEndIndex + bnfFormat.length() + 1, stringEndIndex + bnfFormat.length() + 2));
+            /*}*/ else if(body.matches("^.+" + bnfFormat + ".*$")) {
+                // for recursive rules such as A -> BA' or A -> +A') or A -> +
+                // if there is a nonterminal directly after the symbol we're checking,
+                // then get the first of the nonterminal
+                int index = body.lastIndexOf(bnfFormat) + bnfFormat.length();
+
+                if(index < body.length()) { // possibly some
+                    if(body.charAt(index) == '\'') { // a terminal
+                        int stringEndIndex = body.lastIndexOf(bnfFormat);
+                        follows.add(body.substring(index + 1, index + 2));
+                    }
+                    if(body.charAt(index) == '<') { // a non-terminal
+                        String nextNonterminal = body.substring(index + 1, body.indexOf('>', index));
+                        firstSetOf(nextNonterminal, follows);
+
+                        if(hasEpsilonTransition(nextNonterminal)) {
+                            followOf(head, follows);
+                        }
+                    }
+                } else {
+                    followOf(head, follows);
+                }
             } else {
                 System.out.println("Ignoring this rule... " + body);
             }
@@ -214,6 +235,13 @@ public class Grammar {
         return ruleBody.isEmpty();
     }
 
+    public boolean hasEpsilonTransition(String nonTerminal) {
+        // productions that go to epsilon have an empty body
+        // They are represented using the empty string ""
+        List<String> productions = (List<String>)rules.get(nonTerminal);
+        return productions.contains("");
+    }
+
     public int numberOfProductions() {
         return rules.size();
     }
@@ -223,8 +251,8 @@ public class Grammar {
         return rules;
     }
 
-    public static List<String> nonTerminalsInBNF(String rule) throws BNFGrammarException {
-        List<String> nonterminals = new ArrayList<>();
+    public static List<String> fromBNF(String rule) throws BNFGrammarException {
+        List<String> symbols = new ArrayList<>();
         for(int i = 0; i < rule.length(); i++) {
             if(rule.charAt(i) == '<') {
                 // find closing brackets
@@ -240,11 +268,19 @@ public class Grammar {
                 if(!found) {
                     throw new BNFGrammarException("Missing closing brackets > in rule " + rule);
                 }
-                String nonterminal = rule.substring(i+1, j);
-                nonterminals.add(nonterminal);
+                String nonTerminal = rule.substring(i+1, j);
+                symbols.add(nonTerminal);
                 i = j;
+            } else if(rule.charAt(i) == '\'') { // terminals are one character long
+                // check for closing apostrophe
+                if(rule.charAt(i+2) != '\'') {
+                    throw new BNFGrammarException("Missing closing apostrophe ' in rule " + rule);
+                }
+                String terminal = rule.substring(i+1, i+2);
+                symbols.add(terminal);
+                i += 2;
             }
         }
-        return nonterminals;
+        return symbols;
     }
 }

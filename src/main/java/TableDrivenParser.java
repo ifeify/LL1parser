@@ -27,11 +27,11 @@ public class TableDrivenParser implements Parser {
             System.out.println();
 
             if(topOfStack.equals(Grammar.EOF) &&
-                                Grammar.EOF.equals(input.charAt(index))) {
+                                Grammar.EOF.equals(""+input.charAt(index))) {
                 // input string is correct
                 break;
             } else if(grammar.containsTerminalSymbol(topOfStack)) {
-                if(topOfStack.equals(input.charAt(index))) {
+                if(topOfStack.equals(""+input.charAt(index))) {
                     stack.pop();
                     ++index;
                 } else {
@@ -44,8 +44,8 @@ public class TableDrivenParser implements Parser {
 
                     String rule = result.get();
                     if(!grammar.isEpsilonProduction(rule)) {
-                        List<String> nonterminals = Grammar.nonTerminalsInBNF(rule);
-                        ListIterator<String> iterator = nonterminals.listIterator(nonterminals.size());
+                        List<String> symbols = Grammar.fromBNF(rule);
+                        ListIterator<String> iterator = symbols.listIterator(symbols.size());
 
                         while(iterator.hasPrevious()) {
                             stack.push(iterator.previous());

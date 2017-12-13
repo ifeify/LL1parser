@@ -75,14 +75,13 @@ public class GrammarTest {
 
     @Test
     public void computesFollowSetsOfRecursiveProductionRules() throws BNFGrammarException {
-//        Set<String> followsOfBprime = ll1grammar.followSetOf("Bprime");
-        Set<String> followsOfB = ll1grammar.followSetOf("B");
-        assertThat(followsOfB.size(), is(equalTo(2)));
-        assertThat(followsOfB, hasItems("$", ")"));
+        Set<String> followsOfBprime = ll1grammar.followSetOf("Bprime");
+        assertThat(followsOfBprime.size(), is(equalTo(3)));
+        assertThat(followsOfBprime, hasItems("|", "$", ")"));
     }
 
     @Test
-    public void computesFollowSetOfEpsilonProductionAsItsFirstSet() throws BNFGrammarException {
+    public void computesFollowSetOfEpsilonProductionUsingItsFirstSet() throws BNFGrammarException {
         Set<String> firstOfB = ll1grammar.firstOf("B", "");
         Set<String> followsOfB = ll1grammar.followSetOf("B");
 
@@ -92,12 +91,15 @@ public class GrammarTest {
 
     @Test(expected = BNFGrammarException.class)
     public void throwsExceptionWhenNonTerminalIsMissingAClosingBracket() throws BNFGrammarException {
-        Grammar.nonTerminalsInBNF("'+'<A><B><C");
+        Grammar.fromBNF("'+'<A><B><C");
     }
 
     @Test
-    public void correctlyReturnsNonterminalsFromBNFString() throws BNFGrammarException {
-        List<String> nonterminals = Grammar.nonTerminalsInBNF("'+'<B><C>");
-        assertThat(nonterminals, hasItems("B", "C"));
+    public void correctlyReturnsAllSymbolsInBNFString() throws BNFGrammarException {
+        List<String> symbols = Grammar.fromBNF("'+'<B><C>");
+
+        // TODO: chain asserts together
+        assertThat(symbols.size(), is(equalTo(3)));
+        assertThat(symbols, hasItems("+", "B", "C"));
     }
 }
